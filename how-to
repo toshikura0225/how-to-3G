@@ -2,11 +2,12 @@ lsusbで認識されたデバイスをチェックしておく
 通信モジュールを差し込む
 ダイアログが表示される（sr0...）
 lsusbで確認すると「LG〜」が認識される（ID:1004-6337）
-コマンド:suo eject sr0
+コマンド:suo eject sr0 →差し込み直後はCD-ROMとして認識されてしまうのでejectコマンドでUSBデバイスとして認識させるため
 lsusbで確認すると「LG〜」がID:1004-6336となる
 コマンド:sudo modprobe usbserial vendor=0x1004 product=6336
-別のターミナルからcdコマンドで/devに移動して
-コマンド:ls | grep USB　するとttyUSB0〜ttyUSB2が認識されていることを確認
+　→USBドライバを認識させるようなもの
+別のターミナルからcdコマンドで/devに移動してコマンド:ls | grep USB　するとttyUSB0〜ttyUSB2が認識されていることを確認
+　→またはls -l /dev/ttyU*でもOKか
 コマンド:sudo pon moperaで開始する
 コマンド:tail -f /var/log/messagesで通信状態を確認する
 ifconfigてppp0か接続されていればOK
