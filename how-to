@@ -1,14 +1,33 @@
+soracom参考サイトは
+http://qiita.com/dietposter/items/bf3b0311a044eaf36df8
+
 lsusbで認識されたデバイスをチェックしておく
 通信モジュールを差し込む
-ダイアログが表示される（sr0...）
-lsusbで確認すると「LG〜」が認識される（ID:1004-6337）
-コマンド:suo eject sr0 →差し込み直後はCD-ROMとして認識されてしまうのでejectコマンドでUSBデバイスとして認識させるため
-lsusbで確認すると「LG〜」がID:1004-6336となる
-コマンド:sudo modprobe usbserial vendor=0x1004 product=6336
+lsusbで確認すると「OMEGA TECHNOLOGY」が認識される
+　→参考サイトでは「Product IDが98ffとなってしまうとうまくいかない」との記述があったが再現しなかった
+コマンド:sudo modprobe usbserial vendor=0x1c9e product=6801
 　→USBドライバを認識させるようなもの
-別のターミナルからcdコマンドで/devに移動してコマンド:ls | grep USB　するとttyUSB0〜ttyUSB2が認識されていることを確認
-　→またはls -l /dev/ttyU*でもOKか
-コマンド:sudo pon moperaで開始する
-コマンド:tail -f /var/log/messagesで通信状態を確認する
-ifconfigてppp0か接続されていればOK
-接続を切断するにはコマンド:sudo poff
+ls -l /dev/ttyU*コマンドでttyUSB0〜ttyUSB2が認識されていることを確認
+sudo nano /etc/wvdial.confで設定ファイルを下記に設定する
+[Dialer Defaults]
+Init1 = ATZ
+Init2 = ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0
+Init3 = AT+CGDCONT=1,"IP","soracom.io"
+Dial Attempts = 3
+Modem Type = Analog Modem
+Dial Command = ATD
+Stupid Mode = yes
+Baud = 460800
+New PPPD = yes
+Modem = /dev/ttyUSB2
+ISDN = 0
+APN = soracom.io
+Phone = *99***1#
+Username = sora
+Password = sora
+Carrier Check = no
+Auto DNS = 1
+Check Def Route = 1
+
+sudo wvdialで開始する
+
